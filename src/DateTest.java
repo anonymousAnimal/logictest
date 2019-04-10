@@ -16,15 +16,20 @@ public class DateTest {
 			
 		}
 		catch(Exception e) {
-			System.out.println("invalid date");
+			System.out.println("invalid n");
 			return;
 		}
 		finally {
 			sc.close();
 		}
-		System.out.println("result : "+addNToDate(date, n));
 		
-		
+		if(!validateDate(date))
+		{
+			System.out.println("invalid date");
+			return;
+		}
+			
+		System.out.println(daynoToDate(date, n));
 
 	}
 
@@ -32,22 +37,24 @@ public class DateTest {
 	public static boolean checkLeapYear(int y) 
 	{
 		
-		if(y%100==0 & y%400==0)
+		if(y%100==0 && y%400==0)
 			return true;
 		
-		if(y%100!=0 & y%4==0)
+		if(y%100!=0 && y%4==0)
+		{
 			return true;
-		
+		}
 		
 		return false;
 	}
 	
-	public static boolean validateDate(String date) {
+	public static boolean validateDate(String date) 
+	{
 		
 		//checking for valid format
 		Pattern pdate = Pattern.compile("\\d{2}\\-\\d{2}\\-\\d{4}");
 		if(!pdate.matcher(date).matches()) {
-			System.out.println("invalid date");
+			//System.out.println("invalid date");
 			return false;
 		}
 		
@@ -57,14 +64,14 @@ public class DateTest {
 		Integer mm = Integer.parseInt(arr[1]);
 		Integer yyyy = Integer.parseInt(arr[2]);
 		
-		System.out.println(dd+"-"+mm+"-"+yyyy);
+		//System.out.println(dd+"-"+mm+"-"+yyyy);
 		
 		
 		switch(mm)
 		{
 		case 1 : if(dd > 31 && dd < 1) return false; break;
 		case 2 : 	if(checkLeapYear(yyyy)&&(dd > 29 || dd < 1)) {
-							System.out.println("invalid date");
+							//System.out.println("invalid date");
 						    return false;
 						}
 					else if(dd < 1 || dd >28)
@@ -87,12 +94,80 @@ public class DateTest {
 		return true;
 	}
 	
-	public static String addNToDate(String date, int n) {
+	public static int daysLeftTill31Dec(int d, int m, int y) 
+	{
 		
-		//check if valid date or not
-		if(!validateDate(date))
-			return "invalid date";
-			
-		return "valid date";
+		int res = 0;
+		int arr[];
+		boolean isleap = checkLeapYear(y);
+		if(isleap)
+			arr = new int[]{31,29,31,30,31,30,31,31,30,31,30,31};
+		else
+			arr = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
+		
+		res = arr[m-1]-d;
+		
+		for(int i = m; i< 12; i++) 
+		{
+			res += arr[i];
+		}
+		
+		return res;
 	}
+	
+	public static String daynoToDate(String date, int n) 
+	{
+		
+		int d;
+		int m;
+		int y;
+		
+		String str[] = date.split("-");
+		 d = Integer.parseInt(str[0]);
+		 m = Integer.parseInt(str[1]);
+		 y = Integer.parseInt(str[2]);
+		
+		 //this loop will runs until the date lies within the year
+		while(true) {
+			int daysLeftInCurrentYear = daysLeftTill31Dec(d, m, y);
+			if(n > daysLeftInCurrentYear) 
+			{
+				n -= daysLeftInCurrentYear;
+				d = 0;
+				m = 1;
+				y++;
+			}
+			else
+				break;
+		}
+		
+		
+		//code if result date lies within the same year
+		boolean isleap = checkLeapYear(y);
+		int days[];
+		
+		if(isleap)
+			days = new int[]{31,29,31,30,31,30,31,31,30,31,30,31};
+		else
+			days = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
+		
+		
+		for(int i = 0; i< 12; i++) 
+		{
+			if(n > days[i]) {
+				n -= days[i];
+				m += 1;
+			}
+			else {
+				d = n;
+				n = 0;
+				break;
+			}
+		}
+		
+		
+		return d+"-"+m+"-"+y;
+	}
+	
+	
 }
