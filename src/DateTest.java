@@ -9,10 +9,14 @@ public class DateTest {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("enter the date in given format(dd-mm-yyyy):");
 		String date = sc.nextLine();
-		System.out.println("enter the no.of days :");
+		System.out.println("enter the no.of days (it must be positive):");
 		int n;
 		try {
 			n = Integer.parseInt(sc.nextLine());
+			if(n < 0) {
+				System.out.println("n must be positive number !");
+				return;
+			}
 			
 		}
 		catch(Exception e) {
@@ -52,7 +56,7 @@ public class DateTest {
 	{
 		
 		//checking for valid format
-		Pattern pdate = Pattern.compile("\\d{2}\\-\\d{2}\\-\\d{4}");
+		Pattern pdate = Pattern.compile("\\d{1,2}\\-\\d{1,2}\\-\\d{4}");
 		if(!pdate.matcher(date).matches()) {
 			//System.out.println("invalid date");
 			return false;
@@ -152,16 +156,20 @@ public class DateTest {
 			days = new int[]{31,28,31,30,31,30,31,31,30,31,30,31};
 		
 		
-		for(int i = 0; i< 12; i++) 
+		
+		
+		for(int i = m-1; i< 12 && n > 0; i++) 
 		{
-			if(n > days[i]) {
-				n -= days[i];
+			
+			
+			if(n > days[i]-d) {
+				n = n - (days[i]-d);
+				d = 0;
 				m += 1;
 			}
 			else {
-				d = n;
+				d += n;
 				n = 0;
-				break;
 			}
 		}
 		
